@@ -1,6 +1,12 @@
 name: SFDX Test Run on Push 1
 
-on: [push]
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+        branches:
+            - main
+        paths:
+            - 'force-app/**'
 
 jobs:
   test:
@@ -13,3 +19,7 @@ jobs:
           sfdx-auth-url: ${{ secrets.AUTH_SECRET }}
       - name: sfdx-test-run
         run: sfdx force:apex:test:run -l RunLocalTests -w 30
+      - name: Checkout Local Repo
+        uses: actions/checkout@v2
+      - name: sfdx-deploy-all
+        run: sfdx force:source:deploy --sourcepath force-app
